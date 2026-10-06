@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14532d">
+  <meta name="description" content="Your Mohalla Committee resident and community portal.">
+  <title>Mohalla Committee Portal</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Mohalla Committee home">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span><strong>Mohalla Committee</strong><small>Community portal</small></span>
+    </a>
+    <button id="logoutBtn" class="button button-quiet hidden" type="button">Sign out</button>
+  </header>
+
+  <main class="page-shell">
+    <section id="authSection" class="auth-layout">
+      <div class="welcome-panel">
+        <span class="eyebrow">YOUR NEIGHBOURHOOD, CONNECTED</span>
+        <h1>Welcome to your Mohalla portal.</h1>
+        <p>Check your monthly committee fee, follow community issues, and stay connected with your committee.</p>
+        <div class="welcome-note"><span aria-hidden="true">✓</span> Simple sign-in with your house number</div>
+      </div>
+
+      <div class="auth-card card">
+        <form id="loginForm">
+          <span class="eyebrow">MEMBER ACCESS</span>
+          <h2>Sign in</h2>
+          <p class="muted">Residents: enter only your house number and password. We add @area17688.com automatically.</p>
+          <label for="loginHouse">House number</label>
+          <input id="loginHouse" name="house" type="text" placeholder="For example, L-559" autocomplete="username" required>
+          <label for="loginPassword">Password</label>
+          <input id="loginPassword" name="password" type="password" placeholder="Your password" autocomplete="current-password" required>
+          <p class="form-hint">Committee admins may sign in with their admin email.</p>
+          <button id="loginSubmit" class="button button-primary button-wide" type="submit">Sign in</button>
+          <p class="auth-switch">New to the portal? <button class="text-button" type="button" data-show="registrationSection">Create an account</button></p>
+          <p id="loginMessage" class="message" role="alert"></p>
+          <p class="auth-help">Need help or forgot your password? Call <a href="tel:+923401244638">0340 1244638</a>.</p>
+        </form>
+
+        <form id="registrationForm" class="hidden">
+          <span class="eyebrow">JOIN YOUR MOHALLA</span>
+          <h2>Create your account</h2>
+          <p class="muted">Use your name, house number, and phone. Your house number will be your username.</p>
+          <label for="regName">Your name</label>
+          <input id="regName" name="name" type="text" autocomplete="name" placeholder="Full name" required>
+          <label for="regHouse">House number</label>
+          <input id="regHouse" name="house" type="text" autocomplete="off" placeholder="For example, L-559" required>
+          <label for="regPhone">Mobile number</label>
+          <input id="regPhone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="03XX XXXXXXX" required>
+          <label for="regPassword">Create a password</label>
+          <input id="regPassword" name="password" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required>
+          <button id="registerSubmit" class="button button-primary button-wide" type="submit">Create account</button>
+          <p class="auth-switch">Already registered? <button class="text-button" type="button" data-show="loginForm">Back to sign in</button></p>
+          <p id="registrationMessage" class="message" role="alert"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="profileError" class="card notice-card hidden" role="alert">
+      <span class="notice-icon" aria-hidden="true">!</span>
+      <div><h2>Profile setup is incomplete</h2><p id="profileErrorText">Your login worked, but your portal profile was not found.</p><p class="muted">Please contact the committee admin, then sign out and try again.</p></div>
+    </section>
+
+    <section id="loadingPanel" class="card loading-card hidden" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span><span>Loading your portal…</span>
+    </section>
+
+    <section id="residentSection" class="portal hidden">
+      <div class="portal-heading">
+        <div><span class="eyebrow">RESIDENT PORTAL</span><h1>Welcome, <span id="resName">Resident</span></h1><p class="muted">House <span id="resHouse">—</span></p></div>
+        <span class="role-pill">Resident</span>
+      </div>
+      <nav class="tabbar" aria-label="Resident portal">
+        <button class="tab-button active" data-tab="resident-home" type="button">Overview</button>
+        <button class="tab-button" data-tab="resident-notices" type="button">Notices</button>
+        <button class="tab-button" data-tab="resident-complaints" type="button">My complaints</button>
+        <button class="tab-button" data-tab="resident-payments" type="button">Monthly fees</button>
+        <button class="tab-button" data-tab="resident-settings" type="button">Settings</button>
+      </nav>
+
+      <div id="resident-home" class="tab-panel hidden">
+        <div class="home-grid">
+          <article class="card hero-card">
+            <span class="eyebrow">THIS MONTH</span><h2>Monthly committee fee</h2>
+            <div class="amount">Rs. <span id="homeMonthlyAmount">300</span></div>
+            <div id="homePaymentStatus"></div>
+            <button id="homePayButton" class="button button-light" type="button" data-tab="resident-payments">Pay this month’s fee</button>
+          </article>
+          <article class="card shortcut-card"><span class="shortcut-icon green" aria-hidden="true">+</span><h2>Report a community issue</h2><p class="muted">Tell the committee about sanitation, roads, streetlights, and more.</p><button class="button button-outline" type="button" data-tab="resident-complaints">Go to complaints</button></article>
+        </div>
+        <article class="card section-card"><div class="section-heading"><div><span class="eyebrow">FROM THE COMMITTEE</span><h2>Community notices</h2></div><button class="text-button" type="button" data-tab="resident-notices">See all</button></div><div id="residentHomeNotices" class="list-stack"><div class="empty-state">No news yet.</div></div></article>
+        <article class="card section-card"><div class="section-heading"><div><span class="eyebrow">YOUR COMPLAINTS</span><h2>Recent complaint updates</h2></div><button class="text-button" type="button" data-tab="resident-complaints">See all</button></div><div id="residentRecentComplaints" class="empty-state">Your complaint updates will appear here.</div></article>
+      </div>
+
+      <div id="resident-payments" class="tab-panel hidden">
+        <article class="card section-card">
+          <span class="eyebrow" id="billingMonthLabel">MONTHLY CONTRIBUTION</span>
+          <h2>Pay your Mohalla committee fee</h2>
+          <p class="muted">First send the fee from your EasyPaisa app to the committee account below. The portal does not move money itself. After the transfer, enter the transaction ID and the phone number you sent it from so the admin can verify it.</p>
+          <div class="payment-destination">
+            <div class="destination-icon" aria-hidden="true">₨</div>
+            <div><strong id="accTitle">M. Faizan</strong><span>EasyPaisa / mobile account</span><b id="accNum">03003307099</b><button id="copyPaymentAccount" class="text-button copy-button" type="button">Copy account number</button><span id="bankDetails" class="bank-details"></span></div>
+          </div>
+          <div class="amount-line"><span id="monthlyAmountLabel">Amount due</span><strong>Rs. <span id="monthlyAmount">300</span></strong></div>
+          <div id="paymentStatusBox" class="status-message" aria-live="polite"></div>
+          <form id="paymentForm" class="payment-form hidden">
+            <label for="payerPhoneInput">Your sending phone number <span class="required-mark">Required</span></label>
+            <input id="payerPhoneInput" type="tel" inputmode="tel" autocomplete="tel" placeholder="03XX XXXXXXX" required>
+            <label for="trxIdInput">Transaction / reference ID <span class="required-mark">Required</span></label>
+            <input id="trxIdInput" type="text" autocomplete="off" placeholder="Enter the ID from your payment confirmation" required>
+            <label for="proofImage">Payment screenshot <span class="muted">Optional</span></label>
+            <input id="proofImage" type="file" accept="image/jpeg,image/png,image/webp">
+            <p class="form-hint">A clear screenshot helps the admin verify your payment. Images are resized before saving.</p>
+            <div id="proofPreview" class="proof-preview hidden"></div>
+            <button id="paymentSubmit" class="button button-primary button-wide" type="submit">Send for admin verification</button>
+            <p id="paymentMessage" class="message" role="alert"></p>
+          </form>
+        </article>
+        <article class="card section-card"><span class="eyebrow">YOUR RECORD</span><h2>Past monthly fees</h2><div id="residentPaymentHistory" class="list-stack"><div class="empty-state">Loading payment history…</div></div></article>
+      </div>
+
+      <div id="resident-complaints" class="tab-panel hidden">
+        <div class="home-grid complaint-layout">
+          <article class="card section-card">
+            <span class="eyebrow">LET US KNOW</span><h2>Report an issue</h2>
+            <form id="complaintForm">
+              <label for="cmpCategory">Issue type</label>
+              <select id="cmpCategory" required><option value="Garbage">Garbage / sanitation</option><option value="Water">Water supply</option><option value="Sewerage">Sewerage / drainage</option><option value="Streetlight">Streetlight</option><option value="Roads">Roads / pathways</option><option value="Other">Other</option></select>
+              <label for="cmpDesc">What happened and where?</label>
+              <textarea id="cmpDesc" rows="5" placeholder="Add a street or landmark so the committee can find the issue." required></textarea>
+              <label for="cmpImage">Photo of the issue <span class="muted">Optional</span></label>
+              <input id="cmpImage" type="file" accept="image/jpeg,image/png,image/webp" capture="environment">
+              <p class="form-hint">Add a clear photo from your camera or gallery. The image is resized before saving.</p>
+              <div id="cmpPreview" class="proof-preview hidden"></div>
+              <button class="button button-primary button-wide" type="submit">Submit complaint</button>
+              <p id="complaintMessage" class="message" role="alert"></p>
+            </form>
+          </article>
+          <article class="card section-card"><span class="eyebrow">YOUR REPORTS</span><h2>My complaints</h2><p class="muted">Only you and the committee admin can see your complaint details and photos.</p><div id="residentComplaintList" class="list-stack"><div class="empty-state">Loading your complaints…</div></div></article>
+        </div>
+      </div>
+
+      <div id="resident-notices" class="tab-panel"><article class="card section-card"><span class="eyebrow">FROM THE COMMITTEE</span><h2>Community notices</h2><div id="residentNoticeList" class="list-stack"></div></article></div>
+
+      <div id="resident-settings" class="tab-panel hidden"><article class="card section-card"><span class="eyebrow">PREFERENCES</span><h2>Language and reminders</h2><label for="residentLanguage">Portal language</label><select id="residentLanguage" class="language-select"><option value="en">English</option><option value="ur">اردو</option><option value="roman">Roman Urdu</option></select><div class="setting-row"><div><strong>Monthly fee reminder</strong><p class="muted">Chrome reminder on the 8th when the portal is open, or when you next open it that month.</p></div><button id="enableReminders" class="button button-outline" type="button">Enable reminders</button></div><p id="reminderMessage" class="message" role="status"></p></article></div>
+    </section>
+
+    <section id="adminSection" class="portal hidden">
+      <p id="adminReadError" class="message" role="alert"></p>
+      <div class="portal-heading"><div><span class="eyebrow">COMMITTEE PORTAL</span><h1>Admin dashboard</h1><p class="muted">Review community issues, households, and monthly payments.</p></div><span class="role-pill admin-pill">Administrator</span></div>
+      <nav class="tabbar" aria-label="Admin portal">
+        <button class="tab-button active" data-tab="admin-overview" type="button">Overview</button>
+        <button class="tab-button" data-tab="admin-notices" type="button">News</button>
+        <button class="tab-button" data-tab="admin-complaints" type="button">Complaints <span id="pendingComplaintNav" class="nav-count">0</span></button>
+        <button class="tab-button" data-tab="admin-residents" type="button">Households</button>
+        <button class="tab-button" data-tab="admin-fees" type="button">Fee review <span id="pendingPaymentNav" class="nav-count">0</span></button>
+        <button class="tab-button" data-tab="admin-monthly" type="button">This month</button>
+        <button class="tab-button" data-tab="admin-history" type="button">Payment history</button>
+        <button class="tab-button" data-tab="admin-settings" type="button">Settings</button>
+      </nav>
+      <div id="admin-overview" class="tab-panel hidden"><div class="stats-grid"><article class="card stat-card"><span>Households</span><strong id="statHouseholds">0</strong></article><article class="card stat-card"><span>Open complaints</span><strong id="statComplaints">0</strong></article><article class="card stat-card"><span>Payments to review</span><strong id="statPayments">0</strong></article><article class="card stat-card"><span>Collected this month</span><strong id="statCollected">Rs. 0</strong></article></div><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">CURRENT BILLING PERIOD</span><h2>Fee collection</h2></div><span id="adminBillingMonth" class="month-pill"></span></div><div id="feeSummary" class="summary-line"></div></article><article class="card section-card"><span class="eyebrow">LATEST</span><h2>Recent complaints</h2><div id="adminRecentComplaints" class="list-stack"></div></article><article class="card section-card"><span class="eyebrow">FROM THE COMMITTEE</span><h2>Community notices</h2><div id="adminRecentNotices" class="list-stack"></div></article></div>
+      <div id="admin-complaints" class="tab-panel hidden"><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">COMMUNITY FOLLOW-UP</span><h2>Complaint procedure</h2></div></div><div id="complaintSummary" class="summary-line"></div><div id="adminComplaintList" class="list-stack"></div></article></div>
+      <div id="admin-residents" class="tab-panel hidden"><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">MEMBER DIRECTORY</span><h2>Registered households</h2></div><span id="residentCount" class="month-pill">0 households</span></div><label for="residentSearch">Search by house number, owner, or phone</label><input id="residentSearch" type="search" placeholder="Search households"><div id="adminResidentList" class="list-stack"></div></article></div>
+      <div id="admin-fees" class="tab-panel hidden"><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">MANUAL VERIFICATION</span><h2>Monthly fee review</h2></div><span id="adminFeesMonth" class="month-pill"></span></div><div id="feeSummaryFull" class="summary-line"></div><h3 class="subheading">Awaiting review</h3><div id="adminPaymentList" class="list-stack"></div></article></div>
+      <div id="admin-monthly" class="tab-panel hidden"><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">CURRENT BILLING PERIOD</span><h2>This month by household</h2></div><span id="adminMonthlyMonth" class="month-pill"></span></div><div id="monthlyFeeSummary" class="summary-line"></div><label for="monthlyFeeSearch">Search by house number, owner, or phone</label><input id="monthlyFeeSearch" type="search" placeholder="Search this month’s households"><div id="adminAllFees" class="list-stack"></div></article></div>
+      <div id="admin-history" class="tab-panel hidden"><article class="card section-card"><div class="section-heading"><div><span class="eyebrow">ALL MONTHS</span><h2>Payment history</h2></div></div><div id="adminPaymentHistory" class="list-stack"></div></article></div>
+      <div id="admin-notices" class="tab-panel"><div class="home-grid"><article class="card section-card"><span class="eyebrow">SHARE AN UPDATE</span><h2>Post a community notice</h2><form id="announcementForm"><label for="announcementTitle">Title</label><input id="announcementTitle" maxlength="100" required placeholder="For example, Water supply update"><label for="announcementBody">Information</label><textarea id="announcementBody" rows="5" maxlength="2000" required placeholder="Write a helpful update for residents"></textarea><button class="button button-primary button-wide" type="submit">Publish notice</button><p id="announcementMessage" class="message" role="alert"></p></form></article><article class="card section-card"><span class="eyebrow">NOTICEBOARD</span><h2>Published notices</h2><div id="adminNoticeList" class="list-stack"></div></article></div></div>
+      <div id="admin-settings" class="tab-panel hidden"><article class="card section-card"><span class="eyebrow">PREFERENCES</span><h2>Portal language</h2><label for="adminLanguage">Choose a language</label><select id="adminLanguage" class="language-select"><option value="en">English</option><option value="ur">اردو</option><option value="roman">Roman Urdu</option></select><p class="muted">Language preference is saved on this device. Resident profiles and names cannot be edited here.</p></article></div>
+    </section>
+  </main>
+  <footer class="page-footer">Mohalla Committee · Together for a better neighbourhood</footer>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
